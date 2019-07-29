@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/back"
+    android:orientation="vertical"
+    tools:context=".fragement.CustomerRequestFragment">
+
+    <include
+        android:id="@+id/ride_toolbar"
+        layout="@layout/ride_request_toolbar" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/ride_request_basic"
+        android:textColor="@color/white1"
+        android:textSize="25sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/pickup_location"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="@string/multiline"
+        android:textColor="@color/white1"
+        android:textSize="18sp" />
+
+    <com.bcgdv.asia.lib.ticktock.TickTockView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        app:tickAutoFitText="true"
+        app:tickDotRadius="6dp"
+        app:tickEmptyRingColor="@android:color/white"
+        app:tickFillRingColor="@color/colorPrimary"
+        app:tickMiddleColor="#333333"
+        app:tickMoveCounterClockwise="true"
+        app:tickRingThickness="3dp"
+        app:tickTextColor="#CCCCCC" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="@string/destination"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="@string/Thaltej"
+        android:textColor="@color/white1"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+</LinearLayout>

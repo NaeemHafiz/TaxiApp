@@ -102,7 +102,7 @@ public class AcceptedDetailFragment extends FragmentManagePermission {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        BindView();
+        BindViews();
 
        /* trackRide.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,7 +165,7 @@ public class AcceptedDetailFragment extends FragmentManagePermission {
                 }).show();
     }
 
-    public void BindView() {
+    public void BindViews() {
         gpsTracker = new GPSTracker(getActivity());
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
         linearChat = view.findViewById(R.id.linear_chat);

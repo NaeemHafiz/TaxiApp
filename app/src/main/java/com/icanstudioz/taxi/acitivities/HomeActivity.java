@@ -1,6 +1,7 @@
 package com.icanstudioz.taxi.acitivities;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -23,6 +24,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spannable;
@@ -50,6 +52,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.icanstudioz.taxi.R;
 import com.icanstudioz.taxi.Server.Server;
+import com.icanstudioz.taxi.custom.LocaleHelper;
 import com.icanstudioz.taxi.custom.Utils;
 import com.icanstudioz.taxi.fragement.AcceptedRequestFragment;
 import com.icanstudioz.taxi.fragement.HomeFragment;
@@ -67,7 +70,6 @@ import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
 import com.mapbox.android.core.location.LocationEngineProvider;
-import com.thebrownarrow.permissionhelper.ActivityManagePermission;
 import com.thebrownarrow.permissionhelper.PermissionResult;
 import com.thebrownarrow.permissionhelper.PermissionUtils;
 
@@ -81,7 +83,7 @@ import cz.msebera.android.httpclient.Header;
  * Created by android on 7/3/17.
  */
 
-public class HomeActivity extends ActivityManagePermission implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileUpdateListener, ProfileFragment.UpdateListener, LocationEngineListener {
+public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileUpdateListener, ProfileFragment.UpdateListener, LocationEngineListener {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     public Toolbar toolbar;
@@ -185,13 +187,10 @@ public class HomeActivity extends ActivityManagePermission implements Navigation
                     applyFontToMenuItem(subMenuItem);
                 }
             }
-
             //the method we have create in activity
             applyFontToMenuItem(mi);
         }
-
         callLocationEngine();
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             askCompactPermissions(permissions, new PermissionResult() {
                 @Override
@@ -298,6 +297,9 @@ public class HomeActivity extends ActivityManagePermission implements Navigation
             case R.id.profile:
                 changeFragment(new ProfileFragment(), getString(R.string.profile));
                 break;
+            case R.id.choose_language:
+                showChangeLanguageDialoge();
+                break;
             case R.id.logout:
                 is_online(SessionManager.getUserId(), "0", true);
 
@@ -306,6 +308,52 @@ public class HomeActivity extends ActivityManagePermission implements Navigation
                 break;
         }
         return true;
+    }
+
+    private void showChangeLanguageDialoge() {
+        //array of language to display in alert dialog
+        final String[] listitems = {getResources().getString(R.string.English), getResources().getString(R.string.Arabic)};
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(HomeActivity.this);
+        mBuilder.setTitle(getResources().getString(R.string.Choose_Language));
+        mBuilder.setSingleChoiceItems(listitems, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (i == 0) {
+                    LocaleHelper.setLocale(HomeActivity.this, "en");
+                    refreshLanguageContent();
+                }
+                if (i == 1) {
+                    LocaleHelper.setLocale(HomeActivity.this, "ar");
+                    refreshLanguageContent();
+                    //requestChangeLanguage();
+                }
+                dialogInterface.dismiss();
+            }
+        });
+        AlertDialog alertDialog = mBuilder.create();
+        alertDialog.show();
+    }
+
+    public void refreshLanguageContent() {
+        this.recreate();
+//        requestBack();
+
+//        Intent i = new Intent(HomeActivity.this, SplashActivity.class);
+//        startActivity(i);
+//        this.finish();
+        System.out.println("Refresh Language Content Called :");
+
+//        TextView settingsView = (TextView) findViewById(R.id.bottombar_settings_text);
+//        TextView supportView = (TextView) findViewById(R.id.bottombar_support_text);
+//        Resources resources = getResources();
+//        settingsView.setText(resources.getString(R.string.settings));
+//        supportView.setText(resources.getString(R.string.support));
+//
+//        initializeTimerContent();
+//        initializeDateFormatter();
+//
+//        super.onTick();
+
     }
 
     @SuppressLint("MissingPermission")
@@ -451,7 +499,7 @@ public class HomeActivity extends ActivityManagePermission implements Navigation
         toolbar.setTitle(getString(R.string.app_name));
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        switchCompat = (Switch) navigationView.getHeaderView(0).findViewById(R.id.online);
+        switchCompat = navigationView.getHeaderView(0).findViewById(R.id.online);
         avatar = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile);
         linearLayout = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.linear);
         is_online = (TextView) navigationView.getHeaderView(0).findViewById(R.id.is_online);

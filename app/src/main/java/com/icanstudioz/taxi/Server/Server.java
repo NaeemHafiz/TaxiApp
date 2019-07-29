@@ -20,7 +20,7 @@ import okhttp3.Response;
 
 public class Server {
     OkHttpClient okHttpClient = new OkHttpClient();
-    public static final String BASE_URL = "http://icanstudioz.com/taxiapp/";
+    public static final String BASE_URL = "http://zealchemical.com/taxi/";
 
     private static final String TAG = "server";
 

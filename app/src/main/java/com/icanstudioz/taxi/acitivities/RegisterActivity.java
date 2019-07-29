@@ -38,7 +38,11 @@ import com.icanstudioz.taxi.R;
 import com.icanstudioz.taxi.Server.Server;
 import com.icanstudioz.taxi.custom.GPSTracker;
 import com.icanstudioz.taxi.custom.Utils;
+import com.icanstudioz.taxi.interfaces.NetworkListener;
+import com.icanstudioz.taxi.models.Parameter;
 import com.icanstudioz.taxi.session.SessionManager;
+import com.icanstudioz.taxi.utils.NetworkTask;
+import com.icanstudioz.taxi.utils.WebServices;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.thebrownarrow.permissionhelper.ActivityManagePermission;
@@ -49,6 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -80,12 +85,9 @@ public class RegisterActivity extends ActivityManagePermission implements Google
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
 
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-            @Override
-            public void onSuccess(InstanceIdResult instanceIdResult) {
-                token = instanceIdResult.getToken();
-                SessionManager.setGcmToken(token);
-            }
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult -> {
+            token = instanceIdResult.getToken();
+            SessionManager.setGcmToken(token);
         });
         BindView();
         applyfonts();
@@ -97,68 +99,59 @@ public class RegisterActivity extends ActivityManagePermission implements Google
 
             }
         });
-        sign_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        sign_up.setOnClickListener(v -> {
 
-                View view = getCurrentFocus();
-                if (view != null) {
-                    Utils.hideKeyboard(getApplicationContext(), view);
-                }
-                if (Utils.haveNetworkConnection(getApplicationContext())) {
-                    if (validate()) {
-                        String latitude = "";
-                        String longitude = "";
-                        latitude = String.valueOf(currentLatitude);
-                        longitude = String.valueOf(currentLongitude);
-                        String city = null, state = null, country = null;
-                        String email = input_email.getText().toString().trim();
-                        String mobile = input_mobile.getText().toString().trim();
-                        String password = input_password.getText().toString().trim();
-                        String name = input_name.getText().toString().trim();
+            View view = getCurrentFocus();
+            if (view != null) {
+                Utils.hideKeyboard(getApplicationContext(), view);
+            }
+            if (Utils.haveNetworkConnection(getApplicationContext())) {
+                if (validate()) {
+                    String latitude = "";
+                    String longitude = "";
+                    latitude = String.valueOf(currentLatitude);
+                    longitude = String.valueOf(currentLongitude);
+                    String city = null, state = null, country = null;
+                    String email = input_email.getText().toString().trim();
+                    String mobile = input_mobile.getText().toString().trim();
+                    String password = input_password.getText().toString().trim();
+                    String name = input_name.getText().toString().trim();
 
-                        Geocoder geocoder;
+                    Geocoder geocoder;
 
-                        try {
-                            geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-                            if (latitude != null && longitude != null) {
-                                if (!latitude.equals("0.0") && !longitude.equals("0.0")) {
-                                    try {
-                                        List<Address> addresses = geocoder.getFromLocation(currentLatitude, currentLongitude, 1);
-                                        if (addresses != null && addresses.size() > 0) {
-                                            String merged = "";
-                                            city = addresses.get(0).getLocality();
-                                            country = addresses.get(0).getCountryName();
-                                            state = addresses.get(0).getAdminArea();
-                                            if (city != null) {
-                                                merged = city;
-                                            } else {
-                                                city = "null";
-                                            }
-                                            if (state != null) {
-                                                merged = city + "," + state;
-
-                                            } else {
-                                                state = "null";
-                                            }
-                                            if (country != null) {
-                                                merged = city + "," + state + "," + country;
-
-                                            } else {
-                                                country = "null";
-                                            }
+                    try {
+                        geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                        if (latitude != null && longitude != null) {
+                            if (!latitude.equals("0.0") && !longitude.equals("0.0")) {
+                                try {
+                                    List<Address> addresses = geocoder.getFromLocation(currentLatitude, currentLongitude, 1);
+                                    if (addresses != null && addresses.size() > 0) {
+                                        String merged = "";
+                                        city = addresses.get(0).getLocality();
+                                        country = addresses.get(0).getCountryName();
+                                        state = addresses.get(0).getAdminArea();
+                                        if (city != null) {
+                                            merged = city;
+                                        } else {
+                                            city = "null";
                                         }
-                                    } catch (IOException | IllegalArgumentException e) {
+                                        if (state != null) {
+                                            merged = city + "," + state;
 
-                                        //  e.printStackTrace();
-                                        Log.e("data", e.toString());
+                                        } else {
+                                            state = "null";
+                                        }
+                                        if (country != null) {
+                                            merged = city + "," + state + "," + country;
+
+                                        } else {
+                                            country = "null";
+                                        }
                                     }
-                                } else {
-                                    latitude = "0.0";
-                                    longitude = "0.0";
-                                    city = "null";
-                                    state = "null";
-                                    country = "null";
+                                } catch (IOException | IllegalArgumentException e) {
+
+                                    //  e.printStackTrace();
+                                    Log.e("data", e.toString());
                                 }
                             } else {
                                 latitude = "0.0";
@@ -167,23 +160,29 @@ public class RegisterActivity extends ActivityManagePermission implements Google
                                 state = "null";
                                 country = "null";
                             }
-                        } catch (Exception e) {
+                        } else {
                             latitude = "0.0";
                             longitude = "0.0";
                             city = "null";
                             state = "null";
                             country = "null";
                         }
-
-
-                        register(email, mobile, password, name, latitude, longitude, country, state, city, "0", token, "1", "");
-
-                    } else {
-                        // do nothing
+                    } catch (Exception e) {
+                        latitude = "0.0";
+                        longitude = "0.0";
+                        city = "null";
+                        state = "null";
+                        country = "null";
                     }
+
+
+                    register(email, mobile, password, name, latitude, longitude, country, state, city, "0", token, "1", "");
+
                 } else {
-                    Toast.makeText(RegisterActivity.this, getString(R.string.network), Toast.LENGTH_LONG).show();
+                    // do nothing
                 }
+            } else {
+                Toast.makeText(RegisterActivity.this, getString(R.string.network), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -286,6 +285,50 @@ public class RegisterActivity extends ActivityManagePermission implements Google
         input_mobile.setTypeface(font1);
         sign_up.setTypeface(font);
 
+    }
+
+    public void register2(String email, String mobile, String password, String name, String latitude, String longitude,
+                          String country, String state, String city, String mtype, String gcm_token, String utype, String vehicle_info) {
+        ArrayList<Parameter> parameters = new ArrayList<>();
+        parameters.add(new Parameter("email", email));
+        parameters.add(new Parameter("mobile", mobile));
+        parameters.add(new Parameter("password", password));
+        parameters.add(new Parameter("name", name));
+        parameters.add(new Parameter("latitude", latitude));
+        parameters.add(new Parameter("longitude", longitude));
+        parameters.add(new Parameter("country", country));
+        parameters.add(new Parameter("state", state));
+        parameters.add(new Parameter("city", city));
+        parameters.add(new Parameter("mtype", mtype));
+        parameters.add(new Parameter("gcm_token", gcm_token));
+        parameters.add(new Parameter("utype", utype));
+        parameters.add(new Parameter("vehicle_info", vehicle_info));
+        NetworkTask registerTask = new NetworkTask(this, "POST", WebServices.REGISTER, parameters);
+        registerTask.setTitle("Register");
+        registerTask.setMessage("Please Wait...");
+        registerTask.setListener(new NetworkListener() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    JSONObject jObj = new JSONObject(result);
+                    String status = jObj.getString("status");
+                    if (status.equalsIgnoreCase("Success")) {
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(RegisterActivity.this, result, Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(RegisterActivity.this, getString(R.string.error_occurred), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(RegisterActivity.this, "Error:=" + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+        registerTask.execute();
     }
 
     public void register(String email, String mobile, String password, String name, String latitude, String longitude,
@@ -417,7 +460,6 @@ public class RegisterActivity extends ActivityManagePermission implements Google
                 }
             });
         }
-
     }
 
     @Override

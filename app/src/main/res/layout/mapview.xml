@@ -15,16 +15,16 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/margin_20"
-        android:layout_marginEnd="@dimen/margin_40"
-        android:layout_marginLeft="@dimen/margin_40"
-        android:layout_marginRight="@dimen/margin_40"
         android:layout_marginStart="@dimen/margin_40"
+        android:layout_marginLeft="@dimen/margin_40"
+        android:layout_marginEnd="@dimen/margin_40"
+        android:layout_marginRight="@dimen/margin_40"
+        android:layout_marginBottom="@dimen/margin_20"
         android:background="@drawable/round_start"
         android:backgroundTint="@color/yellow"
         android:gravity="center"
-        android:visibility="gone"
         android:text="@string/Start_Ride"
         android:textColor="@color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 </RelativeLayout>

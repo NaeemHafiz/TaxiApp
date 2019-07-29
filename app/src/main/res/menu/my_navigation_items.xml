@@ -4,39 +4,43 @@
     <item
         android:id="@+id/home"
         android:icon="@mipmap/ic_home_black_24dp"
-        android:title="Home"></item>
+        android:title="Home"/>
 
     <item
         android:id="@+id/pending_requests"
         android:icon="@mipmap/ic_hourglass_empty_black_24dp"
-        android:title="Pending Requests"></item>
+        android:title="Pending Requests"/>
     <item
         android:id="@+id/accepted_requests"
         android:icon="@mipmap/ic_hourglass_full_black_24dp"
-        android:title="Accepted Requests"></item>
+        android:title="Accepted Requests"/>
     <item
         android:id="@+id/completed_rides"
         android:icon="@mipmap/ic_thumb_up_black_24dp"
-        android:title="Completed Rides"></item>
+        android:title="Completed Rides"/>
     <item
         android:id="@+id/cancelled"
         android:icon="@mipmap/ic_cancel_black_24dp"
-        android:title="Cancelled"></item>
+        android:title="Cancelled"/>
     <item
         android:id="@+id/vehicle_information"
         android:icon="@mipmap/ic_directions_car_black_24dp"
-        android:title="Vehicle Information"></item>
+        android:title="Vehicle Information"/>
     <item
         android:id="@+id/payment_detail"
         android:icon="@mipmap/ic_payment_black_24dp"
-        android:title="Payment History"></item>
+        android:title="Payment History"/>
     <item
         android:id="@+id/profile"
         android:icon="@mipmap/ic_account_circle_black_24dp"
-        android:title="Profile"></item>
+        android:title="Profile"/>
+    <item
+        android:id="@+id/choose_language"
+        android:icon="@mipmap/ic_account_circle_black_24dp"
+        android:title="@string/Choose_Language" />
     <item
         android:id="@+id/logout"
         android:icon="@mipmap/ic_power_settings_new_black_24dp"
-        android:title="Log out"></item>
+        android:title="Log out"/>
 
 </menu>

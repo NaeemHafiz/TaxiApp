@@ -50,13 +50,13 @@ public class AcceptedRequestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.accepted_request_fragment, container, false);
-        bindView();
+        bindViews();
 
 
         return view;
     }
 
-    public void bindView() {
+    public void bindViews() {
         ((HomeActivity) getActivity()).fontToTitleBar(getString(R.string.accepted_request));
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
@@ -154,7 +154,5 @@ public class AcceptedRequestFragment extends Fragment {
 
         }
         return title;
-
-
     }
 }

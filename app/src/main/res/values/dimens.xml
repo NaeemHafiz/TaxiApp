@@ -11,7 +11,7 @@
     <dimen name="detail_bottom_margin">10dp</dimen>
     <dimen name="five_dp">10dp</dimen>
     <dimen name="one_twenty">120dp</dimen>
-    <dimen name="twelve">12dp</dimen>
+    <dimen name="twelve">15dp</dimen>
     <dimen name="one_fifty">150dp</dimen>
     <dimen name="one_thirty">130dp</dimen>
     <dimen name="margin_5">5dp</dimen>

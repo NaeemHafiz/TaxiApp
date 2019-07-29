@@ -2,18 +2,23 @@ package com.icanstudioz.taxi.fragement;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,15 +41,18 @@ import cz.msebera.android.httpclient.Header;
  * Created by android on 8/4/17.
  */
 
-public class VehicleInformationFragment extends Fragment {
+public class VehicleInformationFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     ImageView vehicle_pic;
-    TextInputEditText input_brand;
+    Spinner input_brand;
     TextInputEditText input_model;
     TextInputEditText input_year;
     TextInputEditText input_color;
     AppCompatButton btn_continue;
     private TextInputEditText input_vehicleno;
+    ArrayAdapter carTypeAdaper;
+
+    String carTypeid;
 
     View view;
 
@@ -61,6 +69,7 @@ public class VehicleInformationFragment extends Fragment {
                 ((HomeActivity) getActivity()).changeFragment(new UploadDomentFragment(), "Upload Document");
             }
         }
+
         ((HomeActivity) getActivity()).fontToTitleBar("Add Vehicle Information");
         BindView();
         if (Utils.haveNetworkConnection(getActivity())) {
@@ -68,7 +77,7 @@ public class VehicleInformationFragment extends Fragment {
         } else {
             try {
                 User user = SessionManager.getUser();
-                input_brand.setText(user.getBrand());
+//                input_brand.setSelection();
                 input_model.setText(user.getModel());
                 input_year.setText(user.getYear());
                 input_color.setText(user.getColor());
@@ -77,19 +86,14 @@ public class VehicleInformationFragment extends Fragment {
 
             } catch (Exception e) {
                 Log.e("catch", e.toString());
-
             }
-
         }
-
-
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (validate()) {
                     if (Utils.haveNetworkConnection(getActivity())) {
-
-                        updateVehicleInfo(input_brand.getText().toString().trim(),
+                        updateVehicleInfo(carTypeid,
                                 input_model.getText().toString().trim(),
                                 input_year.getText().toString().trim(),
                                 input_color.getText().toString().trim(), input_vehicleno.getText().toString().trim());
@@ -107,12 +111,25 @@ public class VehicleInformationFragment extends Fragment {
 
     public void BindView() {
         vehicle_pic = (ImageView) view.findViewById(R.id.vehicle_pic);
-        input_brand = (TextInputEditText) view.findViewById(R.id.input_brand);
+        input_brand = (Spinner) view.findViewById(R.id.input_brand);
         input_model = (TextInputEditText) view.findViewById(R.id.input_model);
         input_year = (TextInputEditText) view.findViewById(R.id.input_year);
         input_color = (TextInputEditText) view.findViewById(R.id.input_color);
         btn_continue = (AppCompatButton) view.findViewById(R.id.btn_continue);
         input_vehicleno = (TextInputEditText) view.findViewById(R.id.input_vehicleno);
+        //Creating the ArrayAdapter instance having the country list
+        String[] cartypes = {getActivity().getResources().getString(R.string.car_type), getString(R.string.Taxi),
+                getString(R.string.Economy),
+                getString(R.string.Sedan),
+                getString(R.string.SUV),
+                getString(R.string.Pickup),
+                getString(R.string.small), getString(R.string.pickup),
+                getString(R.string.five_ton), getString(R.string.ten_ton)};
+        carTypeAdaper = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, cartypes);
+        carTypeAdaper.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Setting the ArrayAdapter data on the Spinner
+        input_brand.setAdapter(carTypeAdaper);
+        input_brand.setOnItemSelectedListener(this);
         overrideFonts(getActivity(), view);
     }
 
@@ -123,7 +140,7 @@ public class VehicleInformationFragment extends Fragment {
 
         params.put("user_id", SessionManager.getUserId());
         User user = SessionManager.getUser();
-        input_brand.setText(user.getBrand());
+//        input_brand.setText(user.getBrand());
         input_model.setText(user.getModel());
         input_year.setText(user.getYear());
         input_color.setText(user.getColor());
@@ -151,7 +168,7 @@ public class VehicleInformationFragment extends Fragment {
                         Gson gson = new Gson();
                         User user = gson.fromJson(response.getJSONObject("data").toString(), User.class);
 
-                        input_brand.setText(user.getBrand());
+//                        input_brand.setText(user.getBrand());
                         input_model.setText(user.getModel());
                         input_year.setText(user.getYear());
                         input_color.setText(user.getColor());
@@ -183,18 +200,16 @@ public class VehicleInformationFragment extends Fragment {
             }
 
         });
-
-
     }
 
     public Boolean validate() {
         String message = "field is required";
         Boolean validate = true;
-        if (input_brand.getText().toString().trim().equals("")) {
-            input_brand.setError(message);
+        if (input_brand.getSelectedItem().toString().trim().equals("")) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             validate = false;
         } else {
-            input_brand.setError(null);
+            Toast.makeText(getActivity(), null, Toast.LENGTH_SHORT).show();
         }
         if (input_model.getText().toString().trim().equals("")) {
             input_model.setError(message);
@@ -218,7 +233,7 @@ public class VehicleInformationFragment extends Fragment {
     }
 
 
-    public void updateVehicleInfo(String brand, String model, String year, String color, String vehicleno) {
+    public void updateVehicleInfo(String selected_id, String model, String year, String color, String vehicleno) {
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Loading.....");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -226,9 +241,8 @@ public class VehicleInformationFragment extends Fragment {
         RequestParams params = new RequestParams();
 
         Server.setHeader(SessionManager.getKEY());
-
         params.put("user_id", SessionManager.getUserId());
-        params.put("brand", brand);
+        params.put("brand", selected_id);
         params.put("model", model);
         params.put("year", year);
         params.put("color", color);
@@ -242,7 +256,7 @@ public class VehicleInformationFragment extends Fragment {
                     if (response.has("status") && response.getString("status").equalsIgnoreCase("success")) {
                         User user = SessionManager.getUser();
                         Gson gson = new Gson();
-                        user.setBrand(brand);
+                        user.setBrand(selected_id);
                         user.setModel(model);
                         user.setYear(year);
                         user.setColor(color);
@@ -304,4 +318,16 @@ public class VehicleInformationFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
+        carTypeid = String.valueOf(pos);
+        Toast.makeText(getActivity(), "selected" + " " + carTypeid, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "selected" + " " + adapterView.getItemAtPosition(pos).toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+    }
 }
+
+

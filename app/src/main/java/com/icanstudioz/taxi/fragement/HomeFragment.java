@@ -1,12 +1,14 @@
 package com.icanstudioz.taxi.fragement;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -14,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -163,6 +166,7 @@ public class HomeFragment extends FragmentManagePermission implements OnMapReady
 
             Log.e("tag", "Inflate exception   " + e.toString());
         }
+        showDialogeHandler();
 
         return rootView;
     }
@@ -360,6 +364,26 @@ public class HomeFragment extends FragmentManagePermission implements OnMapReady
         Utils.overrideFonts(getActivity(), rootView);
         getEarningInfo();
     }
+
+    public void showDialogeHandler() {
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+              //  showDialog();
+
+            }
+        }, 5000);
+    }
+
+    public void showDialog() {
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.fragment_customer_request);
+
+        dialog.show();
+
+    }
+
 
     public void getEarningInfo() {
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
@@ -613,11 +637,7 @@ public class HomeFragment extends FragmentManagePermission implements OnMapReady
         } else {
             return false;
         }
-
-
     }
-
-
 }
 
 

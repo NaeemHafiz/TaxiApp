@@ -25,14 +25,20 @@ import com.icanstudioz.taxi.R;
 import com.icanstudioz.taxi.Server.Server;
 import com.icanstudioz.taxi.custom.SetCustomFont;
 import com.icanstudioz.taxi.custom.Utils;
+import com.icanstudioz.taxi.interfaces.NetworkListener;
+import com.icanstudioz.taxi.models.Parameter;
 import com.icanstudioz.taxi.pojo.User;
 import com.icanstudioz.taxi.session.SessionManager;
+import com.icanstudioz.taxi.utils.NetworkTask;
+import com.icanstudioz.taxi.utils.WebServices;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.thebrownarrow.permissionhelper.ActivityManagePermission;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -81,6 +87,7 @@ public class LoginActivity extends ActivityManagePermission {
                 }
                 if (Utils.haveNetworkConnection(getApplicationContext())) {
                     if (validate()) {
+//                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         login(input_email.getText().toString().trim(), input_password.getText().toString().trim());
 
 
@@ -93,85 +100,72 @@ public class LoginActivity extends ActivityManagePermission {
 
             }
         });
-
-
     }
 
     public void login(String email, String password) {
 
-        RequestParams params = new RequestParams();
-        params.put("email", email);
-        params.put("password", password);
-        params.put("utype", "1");
-        params.put("gcm_token", token);
-        Log.e("TOKEN",token);
-        Server.post(Server.LOGIN, params, new JsonHttpResponseHandler() {
+        ArrayList<Parameter> params = new ArrayList<>();
+        params.add(new Parameter("email", email));
+        params.add(new Parameter("password", password));
+        params.add(new Parameter("utype", "1"));
+        params.add(new Parameter("gcm_token", token));
+        NetworkTask loginTask = new NetworkTask(this, "POST", WebServices.LOGIN, params);
+        Log.e("TOKEN", token);
+        loginTask.setTitle("Login");
+        loginTask.setMessage("Please Wait...");
+        loginTask.setListener(new NetworkListener() {
             @Override
-            public void onStart() {
-                super.onStart();
-                swipeRefreshLayout.setRefreshing(true);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-
+            public void onSuccess(String result) {
                 try {
-                    if (response.has("status") && response.getString("status").equalsIgnoreCase("success")) {
-
-                        Utils utils = new Utils(LoginActivity.this);
-                        utils.isAnonymouslyLoggedIn();
-
-                        Gson gson = new Gson();
-                        User user = gson.fromJson(response.getJSONObject("data").toString(), User.class);
-                        SessionManager.setUser(gson.toJson(user));
-                        SessionManager.setIsLogin();
-                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-
-
-                        if (user.getBrand() == null || user.getModel() == null || user.getYear() == null || user.getVehicle_no() == null || user.getColor() == null) {
-                            intent.putExtra("go", "vehicle");
-                            startActivity(intent);
-                        } else if (user.getLicence() == null || user.getInsurance() == null || user.getPermit() == null || user.getRegisteration() == null) {
-                            intent.putExtra("go","doc");
-                            startActivity(intent);
-                        } else {
-                            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                        }
-
-                        Toast.makeText(LoginActivity.this, getString(R.string.success), Toast.LENGTH_LONG).show();
-
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, response.getString("data"), Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(LoginActivity.this, "Result:=" + result, Toast.LENGTH_SHORT).show();
+                    JSONObject jObj = new JSONObject(result);
+                    String status = jObj.getString("status");
+                    if (status.equalsIgnoreCase("Success")) {
+                        handleUserData(jObj.getJSONObject("data"));
                     }
-                } catch (JSONException e) {
-
-
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
                 }
             }
 
             @Override
-            public void onFinish() {
-                super.onFinish();
-                swipeRefreshLayout.setRefreshing(false);
+            public void onError(String error) {
+                Toast.makeText(LoginActivity.this, "Error:=" + error, Toast.LENGTH_SHORT).show();
             }
         });
-
-
+        loginTask.execute();
     }
 
+    private void handleUserData(JSONObject response) {
+        Utils utils = new Utils(LoginActivity.this);
+        utils.isAnonymouslyLoggedIn();
+
+        Gson gson = new Gson();
+        User user = gson.fromJson(response.toString(), User.class);
+        SessionManager.setUser(gson.toJson(user));
+        SessionManager.setIsLogin();
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        if (user.getBrand() == null || user.getModel() == null || user.getYear() == null || user.getVehicle_no() == null || user.getColor() == null) {
+            intent.putExtra("go", "vehicle");
+            startActivity(intent);
+        } else if (user.getLicence() == null || user.getInsurance() == null || user.getPermit() == null || user.getRegisteration() == null) {
+            intent.putExtra("go", "doc");
+            startActivity(intent);
+        } else {
+            startActivity(intent);
+        }
+        finish();
+    }
 
     public void bindView() {
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-        as = (TextView) findViewById(R.id.as);
-        txt_createaccount = (TextView) findViewById(R.id.txt_createaccount);
-        input_email = (EditText) findViewById(R.id.input_email);
-        input_password = (EditText) findViewById(R.id.input_password);
-        relative_register = (RelativeLayout) findViewById(R.id.relative_register);
-        login = (AppCompatButton) findViewById(R.id.login);
-        forgot_password = (TextView) findViewById(R.id.txt_forgotpassword);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        as = findViewById(R.id.as);
+        txt_createaccount = findViewById(R.id.txt_createaccount);
+        input_email = findViewById(R.id.input_email);
+        input_password = findViewById(R.id.input_password);
+        relative_register = findViewById(R.id.relative_register);
+        login = findViewById(R.id.login);
+        forgot_password = findViewById(R.id.txt_forgotpassword);
         forgot_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -285,12 +279,12 @@ public class LoginActivity extends ActivityManagePermission {
         params.gravity = Gravity.CENTER_HORIZONTAL;
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        TextView title = (TextView) dialog.findViewById(R.id.title);
-        TextView message = (TextView) dialog.findViewById(R.id.message);
-        final EditText email = (EditText) dialog.findViewById(R.id.input_email);
+        TextView title = dialog.findViewById(R.id.title);
+        TextView message = dialog.findViewById(R.id.message);
+        final EditText email = dialog.findViewById(R.id.input_email);
 
-        AppCompatButton btn_change = (AppCompatButton) dialog.findViewById(R.id.btn_reset);
-        AppCompatButton btn_cancel = (AppCompatButton) dialog.findViewById(R.id.btn_cancel);
+        AppCompatButton btn_change = dialog.findViewById(R.id.btn_reset);
+        AppCompatButton btn_cancel = dialog.findViewById(R.id.btn_cancel);
 
         Typeface font = Typeface.createFromAsset(getAssets(), "font/AvenirLTStd_Medium.otf");
         Typeface font1 = Typeface.createFromAsset(getAssets(), "font/AvenirLTStd_Book.otf");

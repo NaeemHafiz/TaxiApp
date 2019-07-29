@@ -125,6 +125,31 @@
     <string name="ride_complete_msg">Complete</string>
     <string name="ride_cancel_msg">Cancel</string>
     <string name="ride_accept_msg">Accept</string>
+    <string name="Choose_pickup">Choose Pickup</string>
+    <string name="ten_ton">10 Ton Truck</string>
+    <string name="five_ton">5 Ton Truck</string>
+    <string name="small">Small Pickup</string>
+    <string name="pickup">Pickup</string>
+    <string name="Choose_Language">Choose Language</string>
+    <string name="English">English</string>
+    <string name="Arabic">Arabic</string>
+    <string name="car_type">Select Car</string>
+    <string name="Taxi">Taxi</string>
+    <string name="Economy">Economy</string>
+    <string name="Sedan">Sedan</string>
+    <string name="SUV">SUV</string>
+    <string name="Pickup">Pickup</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cubetaxi">CUBETEXI\nDRIVER</string>
+    <string name="accept">ACCEPT</string>
+    <string name="decline">DECLINE</string>
+    <string name="ride_request_basic">Ride Request (Basics)</string>
+    <string name="pickup_location">PICKUP LOCATION</string>
+    <string name="multiline">B,408 Mondeal Square,Opp Honest Hotel Nr\n prahladnagar GardenSarkhej,-GandhiNagar Hwy,\nAhmedAbad,Gujrat 380015,India</string>
+    <string name="destination">Destination Address</string>
+    <string name="Thaltej">Thaltej Gam,Thaltej,AhmaedAbad,Gujrat,India</string>
 
 
 </resources>

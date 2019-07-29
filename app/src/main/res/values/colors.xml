@@ -10,4 +10,7 @@
     <color name="red">#ea110e</color>
     <color name="liner">#DDE4E8</color>
     <color name="btnRequest">#ffbf12</color>
+    <color name="ride_request_color">#ffa626</color>
+    <color name="back">#a4a4a4</color>
+    <color name="white1">#c6c6c6</color>
 </resources>

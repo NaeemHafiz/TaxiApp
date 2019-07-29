@@ -90,7 +90,6 @@
     <string name="create_an_account">انشئ حساب</string>
 
 
-
     <string name="total_rides">إجمالي ركوب الخيل</string>
     <string name="earnings">الأرباح</string>
     <string name="today"> اليوم</string>
@@ -124,4 +123,15 @@
     <string name="vp"> يرجى تحميل تصريح المركبة الخاصة بك</string>
     <string name="vr"> الرجاء تحميل تسجيل سيارتك </string>
     <string name="passanger_vehicle">سيارة ركاب</string>
+    <string name="ride_complete_msg">اكتمال</string>
+    <string name="ride_cancel_msg">إلغاء</string>
+    <string name="ride_accept_msg">قبول</string>
+    <string name="Choose_pickup">اختيار بيك اب</string>
+    <string name="ten_ton">10 طن شاحنة</string>
+    <string name="five_ton">5 طن شاحنة</string>
+    <string name="small">صغيرة بيك اب</string>
+    <string name="pickup">امسك</string>
+    <string name="Choose_Language">اختر اللغة</string>
+    <string name="English">الإنجليزية</string>
+    <string name="Arabic">عربى</string>
 </resources>
